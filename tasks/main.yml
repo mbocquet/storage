@@ -1,0 +1,88 @@
+---
+# tasks file for storage
+- name: volume group
+  lvg:
+    vg: '{{ item.vg_name }}'
+    pvs: '{{ item.pvs }}'
+  loop: '{{ storage_conf }}'
+  register: vg
+  when:
+    - item.pvs is defined
+  tags:
+    - storage
+    - vg
+
+- name: logical volume
+  lvol:
+    pvs: '{{ item.pvs | default(omit) }}'
+    vg: '{{ item.vg_name }}'
+    lv: '{{ item.lv_name }}'
+    size: '{{ item.lv_size }}'
+  loop: '{{ storage_conf }}'
+  register: lv
+  ignore_errors: True
+  when: vg is succeeded
+  tags:
+    - storage
+    - lv
+
+- name: "filesystem (all distribs)"
+  filesystem:
+    dev: '/dev/{{ item.vg_name }}/{{ item.lv_name }}'
+    fstype: '{{ item.fs_type }}'
+    resizefs: yes
+  loop: '{{ storage_conf }}'
+  register: fs
+  ignore_errors: True
+  when:
+    - lv is succeeded
+    - item.fs_type is defined
+    - not ansible_distribution_release in [ 'buster', 'sid' ]
+  tags:
+    - storage
+    - fs
+
+- name: "filesystem (xfs on buster)"
+  filesystem:
+    dev: '/dev/{{ item.vg_name }}/{{ item.lv_name }}'
+    fstype: '{{ item.fs_type }}'
+    resizefs: no
+  loop: '{{ storage_conf }}'
+  register: fs
+  ignore_errors: True
+  when:
+    - lv is succeeded
+    - item.fs_type is defined
+    - item.fs_type == 'xfs'
+    - ansible_distribution_release in [ 'buster', 'sid' ]
+  tags:
+    - storage
+    - fs
+
+- name: mount
+  mount:
+    path: '{{ item.fs_mountpoint }}'
+    src: '/dev/{{ item.vg_name }}/{{ item.lv_name }}'
+    fstype: '{{ item.fs_type }}'
+    state: mounted
+    opts: '{{ item.fs_mountoptions | default(omit) }}'
+  loop: '{{ storage_conf }}'
+  ignore_errors: True
+  when:
+    - item.fs_mountpoint is defined
+  tags:
+    - storage
+    - mount
+
+- name: "filesystem (xfs on buster)"
+  command: 'xfs_growfs {{ item.fs_mountpoint }}'
+  loop: '{{ storage_conf }}'
+  when:
+    - item.fs_type is defined
+    - item.fs_type == 'xfs'
+    - ansible_distribution_release in [ 'buster', 'sid' ]
+  tags:
+    - storage
+    - fs
+    - resize
+...

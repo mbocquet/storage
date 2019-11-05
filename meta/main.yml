@@ -1,0 +1,36 @@
+galaxy_info:
+  author: Mathias BOCQUET
+  description: Ansible role to setup and maintain storage configuration
+  company: Sekoya.org
+
+  issue_tracker_url: https://git.sekoya.org/mb/storage/issues
+
+  license: GPLv3
+
+  min_ansible_version: 2.4
+
+  platforms:
+  - name: Debian
+    versions:
+    - jessie
+    - stretch
+    - buster
+  - name: EL
+    versions:
+    - 5
+    - 6
+    - 7
+
+  galaxy_tags:
+    - filesystem
+    - group
+    - logical
+    - lvm
+    - manager
+    - mount
+    - physical
+    - storage
+    - sysadmin
+    - volume
+
+dependencies: []
