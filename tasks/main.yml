@@ -8,7 +8,7 @@
   register: vg
   when:
     - item.pvs is defined
-    - item.pvs != ''
+    - item.pvs is not null
   tags:
     - storage
     - vg
@@ -36,6 +36,7 @@
   register: fs
   ignore_errors: True
   when:
+    - not ansible_check_mode
     - lv is succeeded
     - item.fs_type is defined
     - not ansible_distribution_release in [ 'buster', 'sid' ]
@@ -52,6 +53,7 @@
   register: fs
   ignore_errors: True
   when:
+    - not ansible_check_mode
     - lv is succeeded
     - item.fs_type is defined
     - item.fs_type == 'xfs'
