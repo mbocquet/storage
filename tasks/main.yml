@@ -8,7 +8,7 @@
   register: vg
   when:
     - item.pvs is defined
-    - item.pvs is not null
+    - item.pvs != ''
   tags:
     - storage
     - vg
