@@ -36,10 +36,9 @@
   register: fs
   ignore_errors: True
   when:
-    - not ansible_check_mode
     - lv is succeeded
     - item.fs_type is defined
-    - not ansible_distribution_release in [ 'buster', 'sid' ]
+    - not ( item.fs_type == 'xfs' and ansible_distribution_release in [ 'buster', 'sid' ] )
   tags:
     - storage
     - fs
@@ -53,7 +52,6 @@
   register: fs
   ignore_errors: True
   when:
-    - not ansible_check_mode
     - lv is succeeded
     - item.fs_type is defined
     - item.fs_type == 'xfs'
