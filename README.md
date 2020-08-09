@@ -22,6 +22,8 @@ Target systems with Logical Volume Manager (LVM) available.
     - _fs_type_ : FS type
     - _fs_mountpoint_ : The mountpoint for this FS.
     - _fs_mountoptions_ : The mount options for this FS.
+    - _fs_dump_ : The dump number for this FS (0 by default).
+    - _fs_passno_ : The passno number for this FS (0 by default).
 
 Example :
 
