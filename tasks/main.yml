@@ -21,41 +21,23 @@
     size: '{{ item.lv_size }}'
   loop: '{{ storage_conf }}'
   register: lv
-  ignore_errors: True
   when: vg is succeeded
   tags:
     - storage
     - lv
 
-- name: "filesystem (all distribs)"
+- name: "filesystem"
   filesystem:
-    dev: '/dev/{{ item.vg_name }}/{{ item.lv_name }}'
+    dev: '/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}'
     fstype: '{{ item.fs_type }}'
     resizefs: yes
   loop: '{{ storage_conf }}'
   register: fs
-  ignore_errors: True
+  ignore_errors: true
   when:
-    - lv is succeeded
+    - not ansible_check_mode
+    - lv is changed
     - item.fs_type is defined
-    - not ( item.fs_type == 'xfs' and ansible_distribution_release in [ 'buster', 'sid' ] )
-  tags:
-    - storage
-    - fs
-
-- name: "filesystem (xfs on buster)"
-  filesystem:
-    dev: '/dev/{{ item.vg_name }}/{{ item.lv_name }}'
-    fstype: '{{ item.fs_type }}'
-    resizefs: no
-  loop: '{{ storage_conf }}'
-  register: fs
-  ignore_errors: True
-  when:
-    - lv is succeeded
-    - item.fs_type is defined
-    - item.fs_type == 'xfs'
-    - ansible_distribution_release in [ 'buster', 'sid' ]
   tags:
     - storage
     - fs
@@ -63,14 +45,13 @@
 - name: mount
   mount:
     path: '{{ item.fs_mountpoint }}'
-    src: '/dev/{{ item.vg_name }}/{{ item.lv_name }}'
+    src: '/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}'
     fstype: '{{ item.fs_type }}'
     state: mounted
     opts: '{{ item.fs_mountoptions | default(omit) }}'
     dump: '{{ item.fs_dump | default(omit) }}'
     passno: '{{ item.fs_passno | default(omit) }}'
   loop: '{{ storage_conf }}'
-  ignore_errors: True
   when:
     - item.fs_mountpoint is defined
   tags:
@@ -81,6 +62,8 @@
   command: 'xfs_growfs {{ item.fs_mountpoint }}'
   loop: '{{ storage_conf }}'
   when:
+    - not ansible_check_mode
+    - lv is changed
     - item.fs_mountpoint is defined
     - item.fs_type is defined
     - item.fs_type == 'xfs'
@@ -89,4 +72,3 @@
     - storage
     - fs
     - resize
-...
