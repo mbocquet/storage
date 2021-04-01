@@ -1,5 +1,13 @@
 ---
 # tasks file for storage
+- name: package
+  package:
+    name: xfsprogs
+  loop: '{{ storage_conf }}'
+  when:
+    - item.fs_type is defined
+    - item.fs_type == 'xfs'
+
 - name: volume group
   lvg:
     vg: '{{ item.vg_name }}'
