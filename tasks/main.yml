@@ -38,7 +38,7 @@
   filesystem:
     dev: '/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}'
     fstype: '{{ item.fs_type }}'
-    resizefs: yes
+    resizefs: true
   loop: '{{ storage_conf }}'
   register: fs
   ignore_errors: true
