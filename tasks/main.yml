@@ -62,6 +62,7 @@
   loop: '{{ storage_conf }}'
   when:
     - item.fs_mountpoint is defined
+  notify: systemd reload
   tags:
     - storage
     - mount
