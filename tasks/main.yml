@@ -16,7 +16,7 @@
   register: vg
   when:
     - item.pvs is defined
-    - item.pvs != ''
+    - item.pvs | length > 0
   tags:
     - storage
     - vg
