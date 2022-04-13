@@ -7,6 +7,9 @@
   when:
     - item.fs_type is defined
     - item.fs_type == 'xfs'
+  tags:
+    - storage
+    - package
 
 - name: volume group
   lvg:
