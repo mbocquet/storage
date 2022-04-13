@@ -17,7 +17,7 @@
   register: vg
   when:
     - item.pvs is defined
-    - item.pvs != ''
+    - item.pvs | length > 0
   tags:
     - storage
     - vg
@@ -40,7 +40,7 @@
   filesystem:
     dev: '/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}'
     fstype: '{{ item.fs_type }}'
-    resizefs: yes
+    resizefs: true
   loop: '{{ storage_conf }}'
   register: fs
   ignore_errors: true
@@ -64,6 +64,7 @@
   loop: '{{ storage_conf }}'
   when:
     - item.fs_mountpoint is defined
+  notify: systemd reload
   tags:
     - storage
     - mount
