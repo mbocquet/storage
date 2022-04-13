@@ -3,10 +3,8 @@
 - name: package
   package:
     name: xfsprogs
-  loop: '{{ storage_conf }}'
   when:
-    - item.fs_type is defined
-    - item.fs_type == 'xfs'
+    - storage_conf is search ("xfs")
   tags:
     - storage
     - package
@@ -32,7 +30,8 @@
     size: '{{ item.lv_size }}'
   loop: '{{ storage_conf }}'
   register: lv
-  when: vg is succeeded
+  when:
+    - vg is succeeded
   tags:
     - storage
     - lv
