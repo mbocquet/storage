@@ -10,7 +10,7 @@
     - package
 
 - name: volume group
-  lvg:
+  community.general.lvg:
     vg: '{{ item.vg_name }}'
     pvs: '{{ item.pvs }}'
   loop: '{{ storage_conf }}'
@@ -23,7 +23,7 @@
     - vg
 
 - name: logical volume
-  lvol:
+  community.general.lvol:
     pvs: '{{ item.pvs | default(omit) }}'
     vg: '{{ item.vg_name }}'
     lv: '{{ item.lv_name }}'
@@ -37,7 +37,7 @@
     - lv
 
 - name: "filesystem"
-  filesystem:
+  community.general.filesystem:
     dev: '/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}'
     fstype: '{{ item.fs_type }}'
     resizefs: true
@@ -53,7 +53,7 @@
     - fs
 
 - name: mount
-  mount:
+  ansible.posix.mount:
     path: '{{ item.fs_mountpoint }}'
     src: '/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}'
     fstype: '{{ item.fs_type }}'
