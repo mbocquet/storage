@@ -71,7 +71,7 @@
     - mount
 
 - name: mount
-  mount:
+  ansible.posix.mount:
     path: '{{ item.fs_mountpoint }}'
     src: '{{ item.fs_src }}'
     fstype: '{{ item.fs_type }}'
