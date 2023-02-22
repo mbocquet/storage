@@ -57,13 +57,32 @@
     path: '{{ item.fs_mountpoint }}'
     src: '/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}'
     fstype: '{{ item.fs_type }}'
-    state: mounted
+    state: "{{ item.state | default('mounted') }}"
     opts: '{{ item.fs_mountoptions | default(omit) }}'
     dump: '{{ item.fs_dump | default(omit) }}'
     passno: '{{ item.fs_passno | default(omit) }}'
   loop: '{{ storage_conf }}'
   when:
     - item.fs_mountpoint is defined
+    - item.fs_src is undefined
+  notify: systemd reload
+  tags:
+    - storage
+    - mount
+
+- name: mount
+  mount:
+    path: '{{ item.fs_mountpoint }}'
+    src: '{{ item.fs_src }}'
+    fstype: '{{ item.fs_type }}'
+    state: "{{ item.state | default('mounted') }}"
+    opts: '{{ item.fs_mountoptions | default(omit) }}'
+    dump: '{{ item.fs_dump | default(omit) }}'
+    passno: '{{ item.fs_passno | default(omit) }}'
+  loop: '{{ storage_conf }}'
+  when:
+    - item.fs_mountpoint is defined
+    - item.fs_src is defined
   notify: systemd reload
   tags:
     - storage

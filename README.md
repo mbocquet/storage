@@ -20,6 +20,7 @@ Target systems with Logical Volume Manager (LVM) available.
       physical devices in the volume group. PV is created if necessary via the
       Ansible module 'lvg'.
     - _fs_type_ : FS type
+    - _fs_src : The filesystem source (UUID=..., LABEL=..., PARTUUID=...). If undefined, defaults to `/dev/mapper/vg_name-lv_name`.
     - _fs_mountpoint_ : The mountpoint for this FS.
     - _fs_mountoptions_ : The mount options for this FS.
     - _fs_dump_ : The dump number for this FS (0 by default).
@@ -32,6 +33,7 @@ Example :
         vg_name: 'sys'
         lv_name: 'root'
         lv_size: '12G'
+        fs_src: 'UUID=098bc92e-f20f-425b-b73e-a161aa0c0e9e'
         fs_type: 'xfs'
         fs_mountpoint: '/'
       - pvs: '/dev/sdb, /dev/sdc'
