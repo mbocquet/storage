@@ -1,6 +1,6 @@
 'storage'. Ansible role to setup and maintain storage configuration.
 
-Copyright © 2016-2023 Mathias Bocquet (mbocquet@sekoya.org)
+Copyright © 2016-2024 Mathias Bocquet (mbocquet@sekoya.org)
 
 This file is part of 'storage' Ansible role.
 
