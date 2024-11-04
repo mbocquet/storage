@@ -36,7 +36,7 @@ Example :
         fs_src: 'UUID=098bc92e-f20f-425b-b73e-a161aa0c0e9e'
         fs_type: 'xfs'
         fs_mountpoint: '/'
-      - pvs: '/dev/sdb, /dev/sdc'
+      - pvs: '/dev/sdb,/dev/sdc'
         vg_name: 'data'
         lv_name: 'mydata'
         lv_size: '16G'
