@@ -44,15 +44,6 @@
       tags:
         - vg
 
-    # when item.state is present :
-    # lvol
-    # filesystem
-    # mount
-    #
-    # when item.state is absent :
-    # mount
-    # lvol
-
     - name: Logical volume
       community.general.lvol:
         pvs: '{{ item.pvs | default(omit) }}'
