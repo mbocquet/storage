@@ -1,6 +1,16 @@
 ---
 # tasks file for storage
-- name: package
+- name: Package
+  package:
+    name: lvm2
+  when:
+    - storage_conf is search ("lv_name")
+  tags:
+    - storage
+    - package
+    - dependencies
+
+- name: Package
   package:
     name: xfsprogs
   when:
@@ -9,39 +19,64 @@
     - storage
     - package
 
-- name: volume group
-  community.general.lvg:
-    vg: '{{ item.vg_name }}'
-    pvs: '{{ item.pvs }}'
-  loop: '{{ storage_conf }}'
-  register: vg
-  when:
-    - item.pvs is defined
-    - item.pvs | length > 0
+- name: Package facts
+  ansible.builtin.package_facts:
   tags:
     - storage
-    - vg
+    - facts
 
-- name: logical volume
-  community.general.lvol:
-    pvs: '{{ item.pvs | default(omit) }}'
-    vg: '{{ item.vg_name }}'
-    lv: '{{ item.lv_name }}'
-    size: '{{ item.lv_size }}'
-  loop: '{{ storage_conf }}'
-  register: lv
+- name: Logical Volume Manager
   when:
-    - vg is succeeded
+    - "'lvm2' in ansible_facts.packages"
   tags:
     - storage
-    - lv
+    - lvm
+  block:
+    - name: Volume group
+      community.general.lvg:
+        vg: '{{ item.vg_name }}'
+        pvs: '{{ item.pvs }}'
+      loop: '{{ storage_conf }}'
+      register: vg
+      when:
+        - item.pvs is defined
+        - item.pvs | length > 0
+      tags:
+        - vg
 
-- name: "filesystem"
+    # when item.state is present :
+    # lvol
+    # filesystem
+    # mount
+    #
+    # when item.state is absent :
+    # mount
+    # lvol
+
+    - name: Logical volume
+      community.general.lvol:
+        pvs: '{{ item.pvs | default(omit) }}'
+        vg: '{{ item.vg_name }}'
+        lv: '{{ item.lv_name }}'
+        size: '{{ item.lv_size }}'
+        state: "{{ item.state | default(omit) }}"
+        force: "{{ item.force | default(omit) }}"
+      loop: '{{ storage_conf }}'
+      register: lv
+      ignore_errors: true
+      when:
+        - vg is succeeded
+      tags:
+        - lv
+
+- name: Filesystem
   community.general.filesystem:
-    dev: '/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}'
-    fstype: '{{ item.fs_type }}'
+    dev: "/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}"
+    fstype: "{{ item.fs_type }}"
     resizefs: true
-  loop: '{{ storage_conf }}'
+    state: "{{ item.state | default(omit) }}"
+    force: "{{ item.force | default(omit) }}"
+  loop: "{{ storage_conf }}"
   register: fs
   ignore_errors: true
   when:
@@ -52,7 +87,7 @@
     - storage
     - fs
 
-- name: mount
+- name: Mount
   ansible.posix.mount:
     path: '{{ item.fs_mountpoint }}'
     src: '/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}'
@@ -70,7 +105,7 @@
     - storage
     - mount
 
-- name: mount
+- name: Mount
   ansible.posix.mount:
     path: '{{ item.fs_mountpoint }}'
     src: '{{ item.fs_src }}'
@@ -88,7 +123,7 @@
     - storage
     - mount
 
-- name: "filesystem (xfs on buster)"
+- name: "Filesystem (xfs on buster)"
   command: 'xfs_growfs {{ item.fs_mountpoint }}'
   loop: '{{ storage_conf }}'
   when:
