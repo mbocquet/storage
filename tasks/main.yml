@@ -124,6 +124,7 @@
     - item.fs_type is defined
     - item.fs_type == 'xfs'
     - ansible_distribution_release in [ 'buster', 'sid' ]
+  changed_when: true
   tags:
     - storage
     - fs
