@@ -1,7 +1,7 @@
 ---
 # tasks file for storage
 - name: Package
-  package:
+  ansible.builtin.package:
     name: lvm2
   when:
     - storage_conf is search ("lv_name")
@@ -11,7 +11,7 @@
     - dependencies
 
 - name: Package
-  package:
+  ansible.builtin.package:
     name: xfsprogs
   when:
     - storage_conf is search ("xfs")
@@ -115,7 +115,7 @@
     - mount
 
 - name: "Filesystem (xfs on buster)"
-  command: 'xfs_growfs {{ item.fs_mountpoint }}'
+  ansible.builtin.command: 'xfs_growfs {{ item.fs_mountpoint }}'
   loop: '{{ storage_conf }}'
   when:
     - not ansible_check_mode
