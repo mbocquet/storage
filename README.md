@@ -16,7 +16,7 @@ Target systems with Logical Volume Manager (LVM) available.
     - _lv_size_ : Logical Volume size. LV and underlying FS (filesystem) will
       be resized if value is greater than current size.
   - non mandatory variables :
-    - _pvs_ : Physical VolumeS. List of comma-separated devices to use as
+    - _pvs_ : Physical VolumeS. Yaml list or List of comma-separated devices to use as
       physical devices in the volume group. PV is created if necessary via the
       Ansible module 'lvg'.
     - _fs_type_ : FS type
@@ -26,21 +26,23 @@ Target systems with Logical Volume Manager (LVM) available.
     - _fs_dump_ : The dump number for this FS (0 by default).
     - _fs_passno_ : The passno number for this FS (0 by default).
 
-Example :
+Examples :
 
     storage_conf:
-      - pvs: '/dev/sda3'
+      - pvs: /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi0
         vg_name: 'sys'
         lv_name: 'root'
         lv_size: '12G'
         fs_src: 'UUID=098bc92e-f20f-425b-b73e-a161aa0c0e9e'
-        fs_type: 'xfs'
+        fs_type: 'ext4'
         fs_mountpoint: '/'
-      - pvs: '/dev/sdb,/dev/sdc'
+      - pvs:
+          - /dev/sdb
+          - /dev/sdc
         vg_name: 'data'
         lv_name: 'mydata'
         lv_size: '16G'
-        fs_type: 'xfs'
+        fs_type: 'ext4'
         fs_mountpoint: '/srv/stuff'
       # here we don't care about the PV distribution
       - vg_name: 'data'
