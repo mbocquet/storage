@@ -36,6 +36,7 @@
       community.general.lvg:
         vg: '{{ item.vg_name }}'
         pvs: '{{ item.pvs }}'
+        pvresize: true
       loop: '{{ storage_conf }}'
       register: vg
       when:
