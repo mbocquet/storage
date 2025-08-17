@@ -92,7 +92,7 @@
   when:
     - item.fs_mountpoint is defined
     - item.fs_src is undefined
-  notify: systemd reload
+  notify: Systemd reload
   tags:
     - storage
     - mount
@@ -110,7 +110,7 @@
   when:
     - item.fs_mountpoint is defined
     - item.fs_src is defined
-  notify: systemd reload
+  notify: Systemd reload
   tags:
     - storage
     - mount

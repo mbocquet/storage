@@ -1,6 +1,6 @@
 ---
 # handlers file for storage
-- name: systemd reload
+- name: Systemd reload
   ansible.builtin.systemd:
     daemon_reload: true
   when: ansible_service_mgr == 'systemd'
