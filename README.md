@@ -16,15 +16,20 @@ Target systems with Logical Volume Manager (LVM) available.
     - _lv_size_ : Logical Volume size. LV and underlying FS (filesystem) will
       be resized if value is greater than current size.
   - non mandatory variables :
-    - _pvs_ : Physical VolumeS. Yaml list or List of comma-separated devices to use as
-      physical devices in the volume group. PV is created if necessary via the
-      Ansible module 'lvg'.
+    - _pvs_ : Physical VolumeS.
+      yaml list or List of comma-separated devices to use as physical devices
+      in the volume group. PV is created if necessary via the Ansible module
+      'lvg'.
     - _fs_type_ : FS type
-    - _fs_src : The filesystem source (UUID=..., LABEL=..., PARTUUID=...). If undefined, defaults to `/dev/mapper/vg_name-lv_name`.
+    - _fs_src : The filesystem source (UUID=..., LABEL=..., PARTUUID=...).
+      If undefined, defaults to `/dev/mapper/vg_name-lv_name`.
     - _fs_mountpoint_ : The mountpoint for this FS.
     - _fs_mountoptions_ : The mount options for this FS.
     - _fs_dump_ : The dump number for this FS (0 by default).
     - _fs_passno_ : The passno number for this FS (0 by default).
+    - _state_ : The state of the volume / filesystem.
+      default is present. If 'absent', force is mandatory.
+    - _force_ : set to true to remove a volume / filesystem with 'state: absent'.
 
 Examples :
 
@@ -55,6 +60,13 @@ Examples :
       - vg_name: 'data'
         lv_name: 'bigdata'
         lv_size: '800G'
+      # Delete a volume / filesystem
+      - lv_name: mydb
+        vg_name: data
+        lv_size: 5G
+        fs_mountpoint: /srv/mydb
+        state: absent
+        force: true
 
 ## Dependencies
 
