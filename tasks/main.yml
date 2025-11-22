@@ -63,7 +63,7 @@
 
 - name: Filesystem
   community.general.filesystem:
-    dev: "/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}"
+    dev: /dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}
     fstype: "{{ item.fs_type }}"
     resizefs: true
     state: "{{ item.state | default(omit) }}"
@@ -82,7 +82,7 @@
 - name: Mount
   ansible.posix.mount:
     path: "{{ item.fs_mountpoint }}"
-    src: "/dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}"
+    src: /dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}
     fstype: "{{ item.fs_type }}"
     state: "{{ item.state | default('mounted') }}"
     opts: "{{ item.fs_mountoptions | default(omit) }}"
@@ -115,8 +115,8 @@
     - storage
     - mount
 
-- name: "Filesystem (xfs on buster)"
-  ansible.builtin.command: "xfs_growfs {{ item.fs_mountpoint }}"
+- name: Filesystem | xfs on buster
+  ansible.builtin.command: xfs_growfs {{ item.fs_mountpoint }}
   loop: "{{ storage_conf }}"
   when:
     - not ansible_check_mode
