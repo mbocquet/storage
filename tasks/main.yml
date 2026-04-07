@@ -79,7 +79,7 @@
     - storage
     - fs
 
-- name: Mount
+- name: Mount | mapper
   ansible.posix.mount:
     path: "{{ item.fs_mountpoint }}"
     src: /dev/mapper/{{ item.vg_name }}-{{ item.lv_name }}
@@ -97,7 +97,7 @@
     - storage
     - mount
 
-- name: Mount
+- name: Mount | fs_src
   ansible.posix.mount:
     path: "{{ item.fs_mountpoint }}"
     src: "{{ item.fs_src }}"
