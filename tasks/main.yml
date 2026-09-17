@@ -38,7 +38,7 @@
         pvs: "{{ item.pvs }}"
         pvresize: true
       loop: "{{ storage_conf }}"
-      register: vg
+      register: storage_vg
       when:
         - item.pvs is defined
         - item.pvs | length > 0
@@ -54,10 +54,10 @@
         state: "{{ item.state | default(omit) }}"
         force: "{{ item.force | default(omit) }}"
       loop: "{{ storage_conf }}"
-      register: lv
+      register: storage_lv
       ignore_errors: true
       when:
-        - vg is succeeded
+        - storage_vg is succeeded
       tags:
         - lv
 
@@ -69,11 +69,10 @@
     state: "{{ item.state | default(omit) }}"
     force: "{{ item.force | default(omit) }}"
   loop: "{{ storage_conf }}"
-  register: fs
   ignore_errors: true
   when:
     - not ansible_check_mode
-    - lv is changed
+    - storage_lv is changed
     - item.fs_type is defined
   tags:
     - storage
@@ -120,7 +119,7 @@
   loop: "{{ storage_conf }}"
   when:
     - not ansible_check_mode
-    - lv is changed
+    - storage_lv is changed
     - item.fs_mountpoint is defined
     - item.fs_type is defined
     - item.fs_type == 'xfs'
